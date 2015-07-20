@@ -10,6 +10,7 @@
         var self = this;
 
         this.bodies = createInvaders(this).concat(new Player(this, gameSize));
+        this.own_bullets = [];
 
         var tick = function() {
             self.update();
@@ -31,6 +32,17 @@
             };
 
             this.bodies = this.bodies.filter(notCollidingWithAnything);
+            this.bodies = this.bodies.filter(
+                           function (value) {
+                               return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
+                           }
+                       );
+            this.own_bullets = this.own_bullets.filter(notCollidingWithAnything);
+            this.own_bullets = this.own_bullets.filter(
+                           function (value) {
+                               return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
+                           }
+                       );
 
             for (var i = 0; i < this.bodies.length; i++) {
                 this.bodies[i].update();
@@ -45,6 +57,14 @@
 
         addBody: function(body) {
             this.bodies.push(body);
+        },
+
+        add_own_bullet: function(bullet) {
+            this.own_bullets.push(bullet);
+        },
+
+        get_num_own_bullets: function() {
+            return this.own_bullets.length;
         },
 
         invadersBelow: function(invader) {
@@ -73,8 +93,10 @@
     Player.prototype = {
         update: function() {
             if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
+                // if check is to prevent player to move outside the board
                 if ((this.center.x - 10) > 0) this.center.x -= 2;
             } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+                // if check is to prevent player to move outside the board
                 if ((this.center.x + 10) < this.gameSize.x) this.center.x += 2;
             }
 
@@ -86,7 +108,10 @@
                     x: 0,
                     y: -6
                 });
-                this.game.addBody(bullet);
+                if (this.game.get_num_own_bullets() == 0) {
+                    this.game.addBody(bullet);
+                    this.game.add_own_bullet(bullet);
+                }
             }
         },
     };
@@ -183,6 +208,13 @@
             b1.center.y + b1.size.y / 2 < b2.center.y - b2.size.y / 2 ||
             b1.center.x - b1.size.x / 2 > b2.center.x + b2.size.x / 2 ||
             b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
+    };
+
+    var inside_board = function(body, x_min, x_max, y_min, y_max) {
+        return (body.center.x > x_min &&
+                body.center.x < x_max &&
+                body.center.y > y_min &&
+                body.center.y < y_max);
     };
 
     window.onload = function() {
