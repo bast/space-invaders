@@ -19,6 +19,7 @@
 
         tick();
     };
+
     Game.prototype = {
         update: function() {
             var bodies = this.bodies;
@@ -57,6 +58,7 @@
 
     var Player = function(game, gameSize) {
         this.game = game;
+        this.gameSize = gameSize;
         this.size = {
             x: 15,
             y: 15
@@ -71,9 +73,9 @@
     Player.prototype = {
         update: function() {
             if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
-                this.center.x -= 2;
+                if ((this.center.x - 10) > 0) this.center.x -= 2;
             } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
-                this.center.x += 2;
+                if ((this.center.x + 10) < this.gameSize.x) this.center.x += 2;
             }
 
             if (this.keyboarder.isDown(this.keyboarder.KEYS.SPACE)) {
