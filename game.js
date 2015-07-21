@@ -33,16 +33,16 @@
 
             this.bodies = this.bodies.filter(notCollidingWithAnything);
             this.bodies = this.bodies.filter(
-                           function (value) {
-                               return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
-                           }
-                       );
+                function(value) {
+                    return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
+                }
+            );
             this.own_bullets = this.own_bullets.filter(notCollidingWithAnything);
             this.own_bullets = this.own_bullets.filter(
-                           function (value) {
-                               return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
-                           }
-                       );
+                function(value) {
+                    return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
+                }
+            );
 
             for (var i = 0; i < this.bodies.length; i++) {
                 this.bodies[i].update();
@@ -212,9 +212,9 @@
 
     var inside_board = function(body, x_min, x_max, y_min, y_max) {
         return (body.center.x > x_min &&
-                body.center.x < x_max &&
-                body.center.y > y_min &&
-                body.center.y < y_max);
+            body.center.x < x_max &&
+            body.center.y > y_min &&
+            body.center.y < y_max);
     };
 
     window.onload = function() {
