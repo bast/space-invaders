@@ -83,6 +83,7 @@
             x: 15,
             y: 15
         };
+        this.color = "#00AA00";
         this.center = {
             x: gameSize.x / 2,
             y: gameSize.y - this.size.x
@@ -117,6 +118,7 @@
     };
 
     var Bullet = function(center, velocity) {
+        this.color = "#FF0000";
         this.size = {
             x: 3,
             y: 3
@@ -178,10 +180,20 @@
     };
 
     var drawRect = function(screen, body) {
-        screen.fillRect(body.center.x - body.size.x / 2,
+        screen.beginPath();
+        screen.strokeStyle = "#000000";
+        screen.fillStyle = "#000000";
+        if ("color" in body) {
+            screen.strokeStyle = body.color;
+            screen.fillStyle = body.color;
+        }
+        screen.rect(body.center.x - body.size.x / 2,
             body.center.y - body.size.y / 2,
             body.size.x,
             body.size.y);
+        screen.fill();
+        screen.stroke();
+        screen.closePath();
     };
 
     var Keyboarder = function() {
