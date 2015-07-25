@@ -9,7 +9,12 @@
         };
         var self = this;
 
-        this.bodies = createInvaders(this).concat(new Player(this, gameSize));
+        this.bodies = []
+        this.bodies.push(new Player(this, gameSize));
+        for (var i = 0; i < 24; i++) {
+            this.bodies.push(new Invader(this, gameSize, (i % 8), (i % 3)));
+        }
+
         this.own_bullets = [];
 
         var tick = function() {
@@ -43,6 +48,21 @@
                     return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
                 }
             );
+
+            var i_min = Number.MAX_VALUE;
+            var i_max = Number.MIN_VALUE;
+            for (var i = 0; i < this.bodies.length; i++) {
+                if (this.bodies[i] instanceof Invader) {
+                    i_min = Math.min(i_min, this.bodies[i].i);
+                    i_max = Math.max(i_max, this.bodies[i].i);
+                }
+            }
+            for (var i = 0; i < this.bodies.length; i++) {
+                if (this.bodies[i] instanceof Invader) {
+                    this.bodies[i].i_min = i_min;
+                    this.bodies[i].i_max = i_max;
+                }
+            }
 
             for (var i = 0; i < this.bodies.length; i++) {
                 this.bodies[i].update();
@@ -134,24 +154,38 @@
         },
     };
 
-    var Invader = function(game, center) {
+    var Invader = function(game, gameSize, i, j) {
         this.game = game;
+        this.gameSize = gameSize;
+        this.i_max = 0;
+        this.i_min = 0;
+        this.i = i;
+        this.j = j;
         this.size = {
             x: 15,
             y: 15
         };
-        this.center = center;
-        this.patrolX = 0;
-        this.speedX = 0.3;
+        this.center = {
+            x: 30 + i * 30,
+            y: 30 + j * 30
+        };
+        this.speed = {
+            x: 0.3,
+            y: 5.0
+        };
     };
 
     Invader.prototype = {
         update: function() {
-            if (this.patrolX < 0 || this.patrolX > 40) {
-                this.speedX *= -1;
+            if (this.center.x > (this.gameSize.x - 30.0 - (this.i_max - this.i)*30.0)) {
+                this.speed.x *= -1;
+                this.center.y += this.speed.y;
             }
-            this.center.x += this.speedX;
-            this.patrolX += this.speedX;
+            if (this.center.x < (                  30.0 + (this.i - this.i_min)*30.0)) {
+                this.speed.x *= -1;
+                this.center.y += this.speed.y;
+            }
+            this.center.x += this.speed.x;
 
             if (Math.random() > 0.995 && !this.game.invadersBelow(this)) {
                 var bullet = new Bullet({
@@ -164,19 +198,6 @@
                 this.game.addBody(bullet);
             }
         },
-    };
-
-    var createInvaders = function(game) {
-        var invaders = [];
-        for (var i = 0; i < 24; i++) {
-            var x = 30 + (i % 8) * 30;
-            var y = 30 + (i % 3) * 30;
-            invaders.push(new Invader(game, {
-                x: x,
-                y: y
-            }));
-        }
-        return invaders;
     };
 
     var drawRect = function(screen, body) {
