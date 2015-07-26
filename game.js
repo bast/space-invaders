@@ -73,7 +73,7 @@
         draw: function(screen, gameSize) {
             screen.clearRect(0, 0, gameSize.x, gameSize.y);
             for (var i = 0; i < this.bodies.length; i++) {
-                drawRect(screen, this.bodies[i]);
+                this.bodies[i].draw(screen);
             }
         },
 
@@ -105,7 +105,6 @@
             x: 15,
             y: 15
         };
-        this.color = "#00AA00";
         this.center = {
             x: gameSize.x / 2,
             y: gameSize.y - this.size.x
@@ -137,10 +136,21 @@
                 }
             }
         },
+        draw: function(screen) {
+            screen.beginPath();
+            screen.strokeStyle = "#000000";
+            screen.fillStyle = "#00AA00";
+            screen.rect(this.center.x - this.size.x / 2,
+                this.center.y - this.size.y / 2,
+                this.size.x,
+                this.size.y);
+            screen.fill();
+            screen.stroke();
+            screen.closePath();
+        }
     };
 
     var Bullet = function(center, velocity) {
-        this.color = "#FF0000";
         this.size = {
             x: 3,
             y: 3
@@ -154,6 +164,18 @@
             this.center.x += this.velocity.x;
             this.center.y += this.velocity.y;
         },
+        draw: function(screen) {
+            screen.beginPath();
+            screen.strokeStyle = "#FF0000";
+            screen.fillStyle = "#FF0000";
+            screen.rect(this.center.x - this.size.x / 2,
+                this.center.y - this.size.y / 2,
+                this.size.x,
+                this.size.y);
+            screen.fill();
+            screen.stroke();
+            screen.closePath();
+        }
     };
 
     var Invader = function(game, gameSize, i, j) {
@@ -200,29 +222,24 @@
                     x: this.center.x,
                     y: this.center.y + this.size.y / 2
                 }, {
-                    x: 0.2*(Math.random() - 0.5),
+                    x: 0.2 * (Math.random() - 0.5),
                     y: 2
                 });
                 this.game.addBody(bullet);
             }
         },
-    };
-
-    var drawRect = function(screen, body) {
-        screen.beginPath();
-        screen.strokeStyle = "#000000";
-        screen.fillStyle = "#000000";
-        if ("color" in body) {
-            screen.strokeStyle = body.color;
-            screen.fillStyle = body.color;
+        draw: function(screen) {
+            screen.beginPath();
+            screen.strokeStyle = "#000000";
+            screen.fillStyle = "#000000";
+            screen.rect(this.center.x - this.size.x / 2,
+                this.center.y - this.size.y / 2,
+                this.size.x,
+                this.size.y);
+            screen.fill();
+            screen.stroke();
+            screen.closePath();
         }
-        screen.rect(body.center.x - body.size.x / 2,
-            body.center.y - body.size.y / 2,
-            body.size.x,
-            body.size.y);
-        screen.fill();
-        screen.stroke();
-        screen.closePath();
     };
 
     var Keyboarder = function() {
