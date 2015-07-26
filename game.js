@@ -1,5 +1,7 @@
 ;
 (function() {
+    'use strict';
+
     var Game = function(canvasId) {
         var canvas = document.getElementById(canvasId);
         var screen = canvas.getContext('2d');
@@ -177,11 +179,11 @@
 
     Invader.prototype = {
         update: function() {
-            if (this.center.x > (this.gameSize.x - 30.0 - (this.i_max - this.i)*30.0)) {
+            if (this.center.x > (this.gameSize.x - 30.0 - (this.i_max - this.i) * 30.0)) {
                 this.speed.x *= -1;
                 this.center.y += this.speed.y;
             }
-            if (this.center.x < (                  30.0 + (this.i - this.i_min)*30.0)) {
+            if (this.center.x < (30.0 + (this.i - this.i_min) * 30.0)) {
                 this.speed.x *= -1;
                 this.center.y += this.speed.y;
             }
