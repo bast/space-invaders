@@ -9,7 +9,6 @@
             x: canvas.width,
             y: canvas.height
         };
-        var self = this;
 
         this.bodies = []
         this.bodies.push(new Player(this, gameSize));
@@ -17,7 +16,7 @@
             this.bodies.push(new Invader(this, gameSize, (i % 8), (i % 3)));
         }
 
-        this.own_bullets = [];
+        var self = this;
 
         var tick = function() {
             self.update();
@@ -40,12 +39,6 @@
 
             this.bodies = this.bodies.filter(notCollidingWithAnything);
             this.bodies = this.bodies.filter(
-                function(value) {
-                    return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
-                }
-            );
-            this.own_bullets = this.own_bullets.filter(notCollidingWithAnything);
-            this.own_bullets = this.own_bullets.filter(
                 function(value) {
                     return (inside_board(value, 0, 310, 0, 310)); // FIXME hardcoded
                 }
@@ -110,16 +103,22 @@
             }
 
             if (this.keyboarder.isDown(this.keyboarder.KEYS.SPACE)) {
-                var bullet = new Bullet({
-                    x: this.center.x,
-                    y: this.center.y - this.size.y / 2
-                }, {
-                    x: 0,
-                    y: -6
-                });
-                if (this.game.own_bullets.length == 0) {
+                var n = 0;
+                for (var i = 0; i < this.game.bodies.length; i++) {
+                    if (this.game.bodies[i] instanceof Bullet) {
+                        if (this.game.bodies[i].own) n++;
+                    }
+                }
+                if (n == 0) {
+                    var bullet = new Bullet({
+                        x: this.center.x,
+                        y: this.center.y - this.size.y / 2
+                    }, {
+                        x: 0,
+                        y: -6
+                    });
+                    bullet.own = true;
                     this.game.bodies.push(bullet);
-                    this.game.own_bullets.push(bullet);
                 }
             }
         },
@@ -144,6 +143,7 @@
         };
         this.center = center;
         this.velocity = velocity;
+        this.own = false;
     };
 
     Bullet.prototype = {
