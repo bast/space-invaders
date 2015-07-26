@@ -194,7 +194,7 @@
                     x: this.center.x,
                     y: this.center.y + this.size.y / 2
                 }, {
-                    x: Math.random() - 0.5,
+                    x: 0.2*(Math.random() - 0.5),
                     y: 2
                 });
                 this.game.addBody(bullet);
