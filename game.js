@@ -76,19 +76,6 @@
                 this.bodies[i].draw(screen);
             }
         },
-
-        addBody: function(body) {
-            this.bodies.push(body);
-        },
-
-        add_own_bullet: function(bullet) {
-            this.own_bullets.push(bullet);
-        },
-
-        get_num_own_bullets: function() {
-            return this.own_bullets.length;
-        },
-
         invadersBelow: function(invader) {
             return this.bodies.filter(function(b) {
                 return b instanceof Invader &&
@@ -130,9 +117,9 @@
                     x: 0,
                     y: -6
                 });
-                if (this.game.get_num_own_bullets() == 0) {
-                    this.game.addBody(bullet);
-                    this.game.add_own_bullet(bullet);
+                if (this.game.own_bullets.length == 0) {
+                    this.game.bodies.push(bullet);
+                    this.game.own_bullets.push(bullet);
                 }
             }
         },
@@ -225,7 +212,7 @@
                     x: 0.2 * (Math.random() - 0.5),
                     y: 2
                 });
-                this.game.addBody(bullet);
+                this.game.bodies.push(bullet);
             }
         },
         draw: function(screen) {
