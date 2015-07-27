@@ -5,6 +5,7 @@
     var Game = function(canvasId) {
         var canvas = document.getElementById(canvasId);
         var screen = canvas.getContext('2d');
+        document.body.style.backgroundColor = "black";
         this.gameSize = {
             x: canvas.width,
             y: canvas.height
@@ -12,7 +13,7 @@
 
         this.guns = [new Player(this, this.gameSize)];
 
-        var sprite1 = new Sprite("#000000", [
+        var sprite1 = new Sprite("#00FF00", [
             [0, 1],
             [0, 2],
             [0, 3],
@@ -63,7 +64,7 @@
             [10, 4]
         ]);
 
-        var sprite2 = new Sprite("#000000", [
+        var sprite2 = new Sprite("#00FF00", [
             [0, 4],
             [0, 5],
             [0, 6],
@@ -121,13 +122,12 @@
         this.own_bullets = [];
 
         var self = this;
-
         var tick = function() {
             self.update();
-            self.draw(screen, self.gameSize);
+            screen.clearRect(0, 0, self.gameSize.x, self.gameSize.y);
+            self.draw(screen);
             requestAnimationFrame(tick);
         };
-
         tick();
     };
 
@@ -193,8 +193,7 @@
                 this.own_bullets[i].update();
             }
         },
-        draw: function(screen, gameSize) {
-            screen.clearRect(0, 0, gameSize.x, gameSize.y);
+        draw: function(screen) {
             for (var i = 0; i < this.guns.length; i++) {
                 this.guns[i].draw(screen);
             }
@@ -293,8 +292,8 @@
     var Sprite = function(color, xy_data) {
         this.color = color;
         this.size = {
-            x: 30,
-            y: 30
+            x: 33,
+            y: 24
         };
         this.xy_data = xy_data;
 
@@ -338,12 +337,12 @@
         this.i = i;
         this.j = j;
         this.size = {
-            x: 30,
-            y: 30
+            x: 33,
+            y: 24
         };
         this.center = {
-            x: 60 + i * 60,
-            y: 60 + j * 60
+            x: 66 + i * 66,
+            y: 48 + j * 48
         };
         this.speed = {
             x: 6.0,
@@ -369,11 +368,11 @@
         update: function() {
             if (this.move_counter == 40) {
                 this.move_counter = 0;
-                if (this.center.x > (this.gameSize.x - 60.0 - (this.i_max - this.i) * 60.0)) {
+                if (this.center.x > (this.gameSize.x - 66.0 - (this.i_max - this.i) * 66.0)) {
                     this.speed.x *= -1;
                     this.center.y += this.speed.y;
                 }
-                if (this.center.x < (60.0 + (this.i - this.i_min) * 60.0)) {
+                if (this.center.x < (66.0 + (this.i - this.i_min) * 66.0)) {
                     this.speed.x *= -1;
                     this.center.y += this.speed.y;
                 }
