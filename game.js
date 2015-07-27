@@ -11,10 +11,112 @@
         };
 
         this.guns = [new Player(this, this.gameSize)];
+
+        var sprite1 = new Sprite("#000000", [
+            [0, 1],
+            [0, 2],
+            [0, 3],
+            [0, 4],
+            [1, 3],
+            [1, 4],
+            [1, 5],
+            [1, 7],
+            [2, 0],
+            [2, 2],
+            [2, 3],
+            [2, 4],
+            [2, 5],
+            [2, 6],
+            [3, 1],
+            [3, 2],
+            [3, 4],
+            [3, 5],
+            [4, 2],
+            [4, 3],
+            [4, 4],
+            [4, 5],
+            [5, 2],
+            [5, 3],
+            [5, 4],
+            [5, 5],
+            [6, 2],
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 1],
+            [7, 2],
+            [7, 4],
+            [7, 5],
+            [8, 0],
+            [8, 2],
+            [8, 3],
+            [8, 4],
+            [8, 5],
+            [8, 6],
+            [9, 3],
+            [9, 4],
+            [9, 5],
+            [9, 7],
+            [10, 1],
+            [10, 2],
+            [10, 3],
+            [10, 4]
+        ]);
+
+        var sprite2 = new Sprite("#000000", [
+            [0, 4],
+            [0, 5],
+            [0, 6],
+            [1, 3],
+            [1, 4],
+            [2, 0],
+            [2, 2],
+            [2, 3],
+            [2, 4],
+            [2, 5],
+            [2, 6],
+            [3, 1],
+            [3, 2],
+            [3, 4],
+            [3, 5],
+            [3, 7],
+            [4, 2],
+            [4, 3],
+            [4, 4],
+            [4, 5],
+            [4, 7],
+            [5, 2],
+            [5, 3],
+            [5, 4],
+            [5, 5],
+            [6, 2],
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [6, 7],
+            [7, 1],
+            [7, 2],
+            [7, 4],
+            [7, 5],
+            [7, 7],
+            [8, 0],
+            [8, 2],
+            [8, 3],
+            [8, 4],
+            [8, 5],
+            [8, 6],
+            [9, 3],
+            [9, 4],
+            [10, 4],
+            [10, 5],
+            [10, 6]
+        ]);
+
         this.invaders = [];
         for (var i = 0; i < 24; i++) {
-            this.invaders.push(new Invader(this, this.gameSize, (i % 8), (i % 3)));
+            this.invaders.push(new Invader(this, this.gameSize, (i % 8), (i % 3), [sprite1, sprite2]));
         }
+
         this.bullets = [];
 
         var self = this;
@@ -181,7 +283,48 @@
         }
     };
 
-    var Invader = function(game, gameSize, i, j) {
+
+    var Sprite = function(color, xy_data) {
+        this.color = color;
+        this.size = {
+            x: 30,
+            y: 30
+        };
+        this.xy_data = xy_data;
+
+        var x_max = Number.MIN_VALUE;
+        var y_max = Number.MIN_VALUE;
+        for (var i = 0; i < this.xy_data.length; i++) {
+            x_max = Math.max(x_max, this.xy_data[i][0]);
+            y_max = Math.max(y_max, this.xy_data[i][1]);
+        }
+
+        this.pixels = [];
+        var ux = this.size.x / (x_max + 1);
+        var uy = this.size.y / (y_max + 1);
+        for (var i = 0; i < this.xy_data.length; i++) {
+            var x0 = ux * this.xy_data[i][0] - this.size.x / 2;
+            var y0 = uy * this.xy_data[i][1] - this.size.y / 2;
+            this.pixels.push([x0, y0, ux, uy]);
+        }
+    };
+
+    Sprite.prototype = {
+        draw: function(screen, x, y) {
+            screen.beginPath();
+            screen.strokeStyle = this.color;
+            screen.fillStyle = this.color;
+            for (var i = 0; i < this.pixels.length; i++) {
+                screen.rect(x + this.pixels[i][0], y + this.pixels[i][1], this.pixels[i][2], this.pixels[i][3]);
+            }
+            screen.fill();
+            screen.stroke();
+            screen.closePath();
+        }
+    };
+
+
+    var Invader = function(game, gameSize, i, j, sprites) {
         this.game = game;
         this.gameSize = gameSize;
         this.i_max = 0;
@@ -189,19 +332,21 @@
         this.i = i;
         this.j = j;
         this.size = {
-            x: 15,
-            y: 15
+            x: 30,
+            y: 30
         };
         this.center = {
-            x: 30 + i * 30,
-            y: 30 + j * 30
+            x: 60 + i * 60,
+            y: 60 + j * 60
         };
         this.speed = {
-            x: 3.0,
-            y: 5.0
+            x: 6.0,
+            y: 10.0
         };
         this.move_counter = 0;
         this.can_shoot = false;
+        this.sprite_counter = 0;
+        this.sprites = sprites;
     };
 
     Invader.prototype = {
@@ -218,15 +363,16 @@
         update: function() {
             if (this.move_counter == 40) {
                 this.move_counter = 0;
-                if (this.center.x > (this.gameSize.x - 30.0 - (this.i_max - this.i) * 30.0)) {
+                if (this.center.x > (this.gameSize.x - 60.0 - (this.i_max - this.i) * 60.0)) {
                     this.speed.x *= -1;
                     this.center.y += this.speed.y;
                 }
-                if (this.center.x < (30.0 + (this.i - this.i_min) * 30.0)) {
+                if (this.center.x < (60.0 + (this.i - this.i_min) * 60.0)) {
                     this.speed.x *= -1;
                     this.center.y += this.speed.y;
                 }
                 this.center.x += this.speed.x;
+                this.sprite_counter++;
             }
             this.move_counter++;
 
@@ -235,16 +381,8 @@
             }
         },
         draw: function(screen) {
-            screen.beginPath();
-            screen.strokeStyle = "#000000";
-            screen.fillStyle = "#000000";
-            screen.rect(this.center.x - this.size.x / 2,
-                this.center.y - this.size.y / 2,
-                this.size.x,
-                this.size.y);
-            screen.fill();
-            screen.stroke();
-            screen.closePath();
+            var i = this.sprite_counter % this.sprites.length;
+            this.sprites[i].draw(screen, this.center.x, this.center.y);
         }
     };
 
