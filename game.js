@@ -60,6 +60,18 @@
                 this.invaders[i].i_max = i_max;
             }
 
+            for (var i = 0; i < this.invaders.length; i++) {
+                this.invaders[i].can_shoot = true;
+                for (var j = 0; j < this.invaders.length; j++) {
+                    if (this.invaders[i].i == this.invaders[j].i) {
+                        if (this.invaders[i].j < this.invaders[j].j) {
+                            this.invaders[i].can_shoot = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
             for (var i = 0; i < this.guns.length; i++) {
                 this.guns[i].update();
             }
@@ -81,13 +93,6 @@
             for (var i = 0; i < this.bullets.length; i++) {
                 this.bullets[i].draw(screen);
             }
-        },
-        invadersBelow: function(invader) {
-            return this.invaders.filter(function(b) {
-                return b instanceof Invader &&
-                    b.center.y > invader.center.y &&
-                    b.center.x - invader.center.x < invader.size.x;
-            }).length > 0;
         }
     };
 
@@ -196,6 +201,7 @@
             y: 5.0
         };
         this.move_counter = 0;
+        this.can_shoot = false;
     };
 
     Invader.prototype = {
@@ -224,7 +230,7 @@
             }
             this.move_counter++;
 
-            if (Math.random() > 0.997 && !this.game.invadersBelow(this)) {
+            if (Math.random() > 0.997 && this.can_shoot) {
                 this.shoot();
             }
         },
