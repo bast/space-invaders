@@ -188,8 +188,17 @@
     };
 
     Invader.prototype = {
+        shoot: function() {
+            var bullet = new Bullet({
+                x: this.center.x,
+                y: this.center.y + this.size.y / 2
+            }, {
+                x: 0.2 * (Math.random() - 0.5),
+                y: 2
+            });
+            this.game.bodies.push(bullet);
+        },
         update: function() {
-
             if (this.move_counter == 40) {
                 this.move_counter = 0;
                 if (this.center.x > (this.gameSize.x - 30.0 - (this.i_max - this.i) * 30.0)) {
@@ -205,14 +214,7 @@
             this.move_counter++;
 
             if (Math.random() > 0.997 && !this.game.invadersBelow(this)) {
-                var bullet = new Bullet({
-                    x: this.center.x,
-                    y: this.center.y + this.size.y / 2
-                }, {
-                    x: 0.2 * (Math.random() - 0.5),
-                    y: 2
-                });
-                this.game.bodies.push(bullet);
+                this.shoot();
             }
         },
         draw: function(screen) {
