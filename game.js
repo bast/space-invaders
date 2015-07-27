@@ -118,6 +118,7 @@
         }
 
         this.bullets = [];
+        this.own_bullets = [];
 
         var self = this;
 
@@ -133,12 +134,16 @@
     Game.prototype = {
         update: function() {
 
+            var arrays = collide(this.own_bullets, this.bullets);
+            this.own_bullets = arrays[0];
+            this.bullets = arrays[1];
+
             var arrays = collide(this.bullets, this.guns);
             this.bullets = arrays[0];
             this.guns = arrays[1];
 
-            var arrays = collide(this.bullets, this.invaders);
-            this.bullets = arrays[0];
+            var arrays = collide(this.own_bullets, this.invaders);
+            this.own_bullets = arrays[0];
             this.invaders = arrays[1];
 
             var gameSize = this.gameSize;
@@ -150,6 +155,7 @@
             };
 
             this.bullets = this.bullets.filter(is_inside_board);
+            this.own_bullets = this.own_bullets.filter(is_inside_board);
 
             var i_min = Number.MAX_VALUE;
             var i_max = Number.MIN_VALUE;
@@ -183,6 +189,9 @@
             for (var i = 0; i < this.bullets.length; i++) {
                 this.bullets[i].update();
             }
+            for (var i = 0; i < this.own_bullets.length; i++) {
+                this.own_bullets[i].update();
+            }
         },
         draw: function(screen, gameSize) {
             screen.clearRect(0, 0, gameSize.x, gameSize.y);
@@ -194,6 +203,9 @@
             }
             for (var i = 0; i < this.bullets.length; i++) {
                 this.bullets[i].draw(screen);
+            }
+            for (var i = 0; i < this.own_bullets.length; i++) {
+                this.own_bullets[i].draw(screen);
             }
         }
     };
@@ -223,11 +235,7 @@
             }
 
             if (this.keyboarder.isDown(this.keyboarder.KEYS.SPACE)) {
-                var n = 0;
-                for (var i = 0; i < this.game.bullets.length; i++) {
-                    if (this.game.bullets[i].own) n++;
-                }
-                if (n == 0) {
+                if (this.game.own_bullets.length == 0) {
                     var bullet = new Bullet({
                         x: this.center.x,
                         y: this.center.y - this.size.y / 2
@@ -235,8 +243,7 @@
                         x: 0,
                         y: -6
                     });
-                    bullet.own = true;
-                    this.game.bullets.push(bullet);
+                    this.game.own_bullets.push(bullet);
                 }
             }
         },
@@ -261,7 +268,6 @@
         };
         this.center = center;
         this.velocity = velocity;
-        this.own = false;
     };
 
     Bullet.prototype = {
