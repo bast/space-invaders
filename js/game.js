@@ -13,8 +13,20 @@ define('game', ['sprites'], function (sprites) {
         this.guns = [new Player(this, this.gameSize)];
 
         this.invaders = [];
-        for (var i = 0; i < 24; i++) {
-            this.invaders.push(new Invader(this, this.gameSize, (i % 8), (i % 3), [sprites.sprite1, sprites.sprite2]));
+        for (var i = 0; i < 11; i++) {
+            this.invaders.push(new Invader(this, this.gameSize, i, 0, [sprites.sprite1a, sprites.sprite1b]));
+        }
+        for (var i = 0; i < 11; i++) {
+            this.invaders.push(new Invader(this, this.gameSize, i, 1, [sprites.sprite2a, sprites.sprite2b]));
+        }
+        for (var i = 0; i < 11; i++) {
+            this.invaders.push(new Invader(this, this.gameSize, i, 2, [sprites.sprite2a, sprites.sprite2b]));
+        }
+        for (var i = 0; i < 11; i++) {
+            this.invaders.push(new Invader(this, this.gameSize, i, 3, [sprites.sprite3a, sprites.sprite3b]));
+        }
+        for (var i = 0; i < 11; i++) {
+            this.invaders.push(new Invader(this, this.gameSize, i, 4, [sprites.sprite3a, sprites.sprite3b]));
         }
 
         this.bullets = [];
