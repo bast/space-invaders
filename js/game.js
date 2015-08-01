@@ -173,8 +173,8 @@ define('game', ['sprites'], function (sprites) {
 
     var Bullet = function(center, velocity) {
         this.size = {
-            x: 3,
-            y: 3
+            x: 4,
+            y: 8
         };
         this.center = center;
         this.velocity = velocity;
@@ -187,8 +187,8 @@ define('game', ['sprites'], function (sprites) {
         },
         draw: function(screen) {
             screen.beginPath();
-            screen.strokeStyle = "#FF0000";
-            screen.fillStyle = "#FF0000";
+            screen.strokeStyle = "#FF9999";
+            screen.fillStyle = "#FF9999";
             screen.rect(this.center.x - this.size.x / 2,
                 this.center.y - this.size.y / 2,
                 this.size.x,
