@@ -1,4 +1,4 @@
-define('game', ['sprites'], function (sprites) {
+define('game', ['sprites'], function(sprites) {
     'use strict';
 
     var Game = function(canvasId) {
@@ -10,7 +10,7 @@ define('game', ['sprites'], function (sprites) {
             y: canvas.height
         };
 
-        this.guns = [new Player(this, this.gameSize)];
+        this.guns = [new Player(this, this.gameSize, sprites.gun)];
 
         this.invaders = [];
         for (var i = 0; i < 11; i++) {
@@ -120,18 +120,16 @@ define('game', ['sprites'], function (sprites) {
         }
     };
 
-    var Player = function(game, gameSize) {
+    var Player = function(game, gameSize, sprite) {
         this.game = game;
         this.gameSize = gameSize;
-        this.size = {
-            x: 15,
-            y: 15
-        };
+        this.size = sprite.size;
         this.center = {
             x: gameSize.x / 2,
             y: gameSize.y - this.size.x
         };
         this.keyboarder = new Keyboarder();
+        this.sprite = sprite;
     };
 
     Player.prototype = {
@@ -152,32 +150,22 @@ define('game', ['sprites'], function (sprites) {
                     }, {
                         x: 0,
                         y: -6
-                    });
+                    }, [sprites.bullet1, sprites.bullet2]);
                     this.game.own_bullets.push(bullet);
                 }
             }
         },
         draw: function(screen) {
-            screen.beginPath();
-            screen.strokeStyle = "#000000";
-            screen.fillStyle = "#00AA00";
-            screen.rect(this.center.x - this.size.x / 2,
-                this.center.y - this.size.y / 2,
-                this.size.x,
-                this.size.y);
-            screen.fill();
-            screen.stroke();
-            screen.closePath();
+            this.sprite.draw(screen, this.center.x, this.center.y);
         }
     };
 
-    var Bullet = function(center, velocity) {
-        this.size = {
-            x: 4,
-            y: 8
-        };
+    var Bullet = function(center, velocity, sprites) {
+        this.size = sprites[0].size;
         this.center = center;
         this.velocity = velocity;
+        this.sprites = sprites;
+        this.sprite_counter = 0;
     };
 
     Bullet.prototype = {
@@ -186,16 +174,9 @@ define('game', ['sprites'], function (sprites) {
             this.center.y += this.velocity.y;
         },
         draw: function(screen) {
-            screen.beginPath();
-            screen.strokeStyle = "#FF9999";
-            screen.fillStyle = "#FF9999";
-            screen.rect(this.center.x - this.size.x / 2,
-                this.center.y - this.size.y / 2,
-                this.size.x,
-                this.size.y);
-            screen.fill();
-            screen.stroke();
-            screen.closePath();
+            var i = this.sprite_counter % this.sprites.length;
+            this.sprites[i].draw(screen, this.center.x, this.center.y);
+            this.sprite_counter++;
         }
     };
 
@@ -207,10 +188,7 @@ define('game', ['sprites'], function (sprites) {
         this.i_min = 0;
         this.i = i;
         this.j = j;
-        this.size = {
-            x: 33,
-            y: 24
-        };
+        this.size = sprites[0].size;
         this.center = {
             x: 66 + i * 66,
             y: 48 + j * 48
@@ -233,7 +211,7 @@ define('game', ['sprites'], function (sprites) {
             }, {
                 x: 0.2 * (Math.random() - 0.5),
                 y: 2
-            });
+            }, [sprites.bullet1, sprites.bullet2]);
             this.game.bullets.push(bullet);
         },
         update: function() {
